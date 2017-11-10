@@ -10,8 +10,6 @@
 
 namespace sensors {
 
-using Measurement = Eigen::Vector4d;
-
 class GPSSensor {
 public:
   GPSSensor(double noise_x, double noise_v);

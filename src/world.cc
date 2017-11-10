@@ -17,20 +17,20 @@ noise_v_(noise_v), noise_theta_(noise_theta) {
   gaussian_theta_ = std::normal_distribution<>(0, noise_theta_);
 }
 
-void World::derivative(const State& x, const Control& u, State& dx) {
+void World::derivative(const State& x, const control::State& u, State& dx) {
   dx(0) = x(2) * cos(x(3));
   dx(1) = x(2) * sin(x(3));
   dx(2) = u(0) - gamma_v_*x(2);
   dx(3) = u(1)*exp(-gamma_theta_*x(2));
 }
 
-State World::derivative(const State& x, const Control& u) {
+State World::derivative(const State& x, const control::State& u) {
   State dx;
   derivative(x, u, dx);
   return dx;
 }
 
-State World::step(State x, const Control& u) {
+State World::step(State x, const control::State& u) {
   State dx;
   double dt = ticktime_/subticks_;
   for (int i=1; i<=subticks_; i++) {

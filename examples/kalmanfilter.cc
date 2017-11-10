@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   world::World world(ticktime, substeps, gamma_v, gamma_theta, noise_v, noise_theta);
   world::State x0;
   x0 << 0, 0, 0.5, 0;
-  world::Control u0;
+  control::State u0;
   u0 << 1.0, 0.1;
 
   double noise_position = 1.2;
@@ -25,12 +25,15 @@ int main(int argc, char **argv) {
   sensors::GPSSensor sensor(noise_position, noise_velocity);
   sensor.measure(0, x0);
 
-  filters::ExtendedKalmanFilter filter(ticktime, gamma_v, gamma_theta,
-                                       noise_v, noise_theta,
-                                       noise_position, noise_velocity);
+  sensormodel::GPSSensor model_sensor(noise_position, noise_velocity);
+  worldmodel::World model_world(gamma_v, gamma_theta, noise_v, noise_theta);
+  filters::ExtendedKalmanFilter filter(model_world, model_sensor);
+//   filters::ExtendedKalmanFilter filter(ticktime, gamma_v, gamma_theta,
+//                                        noise_v, noise_theta,
+//                                        noise_position, noise_velocity);
   filters::KalmanProbability believe;
   believe.mu << sensor.x, sensor.y, sqrt(pow(sensor.vx, 2) + pow(sensor.vy, 2)), atan2(sensor.vy, sensor.vx);
-  believe.sigma = filters::Covariance::Zero();
+  believe.sigma = worldmodel::Matrix::Zero();
   believe.sigma(0, 0) = noise_position;
   believe.sigma(1, 1) = noise_position;
   believe.sigma(2, 2) = noise_velocity;
@@ -46,12 +49,12 @@ int main(int argc, char **argv) {
 
   int N = 100;
   world::State x = x0;
-  sensors::Measurement z;
+  measurement::State z;
   for (int i=1; i<N; i++) {
     x = world.step(x, u0);
     sensor.measure(i, x);
     z << sensor.x, sensor.y, sensor.vx, sensor.vy;
-    believe = filter.filter(believe, u0, z);
+    believe = filter.filter(ticktime, believe, u0, z);
 
     series_worldstate->append(x(0), x(1));
     series_measuredstate->append(sensor.x, sensor.y);

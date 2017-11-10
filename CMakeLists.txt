@@ -6,7 +6,7 @@ set (CMAKE_CXX_FLAGS "-Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-s
 
 include_directories(include)
 
-add_library(mobilerobot SHARED src/filters.cc src/sensors.cc src/world.cc )
+add_library(mobilerobot SHARED src/filters.cc src/sensors.cc src/world.cc src/worldmodel.cc src/sensormodel.cc)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)

@@ -5,22 +5,23 @@
 #include <random>
 #include <eigen3/Eigen/Dense>
 
+#include "mobilerobot/control.h"
+
+
 namespace world {
 
 // (x, y, v, theta)
 using State = Eigen::Vector4d;
 
-// (Fv, Ftheta)
-using Control = Eigen::Vector2d;
 
 class World {
 public:
   World(double ticktime, int subticks, double gamma_v, double gamma_theta, double noise_v, double noise_theta);
 
-  void derivative(const State& x, const Control& u, State& dx);
-  State derivative(const State& x, const Control& u);
+  void derivative(const State& x, const control::State& u, State& dx);
+  State derivative(const State& x, const control::State& u);
 
-  State step(State x, const Control& u);
+  State step(State x, const control::State& u);
 
   double random_dv();
   double random_dtheta();
