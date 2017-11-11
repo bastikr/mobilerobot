@@ -34,8 +34,11 @@ int main(int argc, char **argv) {
   for (auto& particle: believe_particles) particle = worldmodel::State::Zero();
 
   QLineSeries *series_worldstate = new QLineSeries();
+  series_worldstate->setName("World");
   QLineSeries *series_measuredstate = new QLineSeries();
+  series_measuredstate->setName("GPSSensor");
   QLineSeries *series_particles = new QLineSeries();
+  series_particles->setName("Particle Filter");
   std::vector<QLineSeries*> series_singleparticles;
   for (int i=0; i<Nparticles; i++) series_singleparticles.push_back(new QLineSeries);
   QColor color(122, 122, 122);
@@ -66,16 +69,14 @@ int main(int argc, char **argv) {
     guess_particles = filter_particles.guess(believe_particles);
     series_particles->append(guess_particles(0), guess_particles(1));
     for (int i=0; i<Nparticles; i++) series_singleparticles[i]->append(believe_particles[i](0), believe_particles[i](1));
-
-//     std::cout << "t=" << ticktime*i << ": " << x.transpose() << std::endl;
   }
 
   QApplication app(argc, argv);
 
   QChart *chart = new QChart();
-  chart->legend()->hide();
   for (int i=0; i<Nparticles; i++) {
     chart->addSeries(series_singleparticles[i]);
+    chart->legend()->markers(series_singleparticles[i])[0]->setVisible(0);
   }
   chart->addSeries(series_worldstate);
   chart->addSeries(series_measuredstate);
@@ -83,7 +84,7 @@ int main(int argc, char **argv) {
 
 
   chart->createDefaultAxes();
-  chart->setTitle("Simple line chart example");
+  chart->setTitle("Particle Filter");
 
   QChartView *chartView = new QChartView(chart);
   chartView->setRenderHint(QPainter::Antialiasing);
