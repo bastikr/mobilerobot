@@ -33,4 +33,13 @@ Matrix GPSSensor::noise_covariance() const {
   return Q;
 }
 
+double GPSSensor::probability(const measurement::State& z, const worldmodel::State& x) const {
+  double pi = 3.1415926535897;
+  measurement::State z0 = measure(x);
+  measurement::State dz = z - z0;
+  Matrix Q = noise_covariance();
+  return sqrt(2*pi*Q.determinant())*exp(-0.5*dz.transpose()*Q.inverse()*dz);
+}
+
+
 } // namespace sensormodel

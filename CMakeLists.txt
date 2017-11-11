@@ -13,6 +13,8 @@ find_package(Qt5Widgets)
 find_package(Qt5Charts)
 
 add_executable(kalman examples/kalmanfilter.cc mobilerobot)
+add_executable(particles examples/particlefilter.cc mobilerobot)
 
 # Use the Widgets module from Qt 5.
 target_link_libraries(kalman Qt5::Widgets Qt5::Charts mobilerobot)
+target_link_libraries(particles Qt5::Widgets Qt5::Charts mobilerobot)
