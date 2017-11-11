@@ -29,9 +29,6 @@ int main(int argc, char **argv) {
   worldmodel::World model_world(gamma_v, gamma_theta, noise_v, noise_theta);
   filters::ExtendedKalmanFilter filter_kalman(model_world, model_sensor);
   filters::ParticleFilter filter_particles(model_world, model_sensor);
-//   filters::ExtendedKalmanFilter filter(ticktime, gamma_v, gamma_theta,
-//                                        noise_v, noise_theta,
-//                                        noise_position, noise_velocity);
   filters::KalmanProbability believe_kalman;
   believe_kalman.mu << sensor.x, sensor.y, sqrt(pow(sensor.vx, 2) + pow(sensor.vy, 2)), atan2(sensor.vy, sensor.vx);
   believe_kalman.sigma = worldmodel::Matrix::Zero();
@@ -45,9 +42,13 @@ int main(int argc, char **argv) {
   for (auto& particle: believe_particles) particle = worldmodel::State::Zero();
 
   QLineSeries *series_worldstate = new QLineSeries();
+  series_worldstate->setName("World");
   QLineSeries *series_measuredstate = new QLineSeries();
+  series_measuredstate->setName("GPS sensor");
   QLineSeries *series_kalman = new QLineSeries();
+  series_kalman->setName("Kalman Filter");
   QLineSeries *series_particles = new QLineSeries();
+  series_particles->setName("Particle Filter");
 
   series_worldstate->append(x0(0), x0(1));
   series_measuredstate->append(sensor.x, sensor.y);
@@ -70,20 +71,17 @@ int main(int argc, char **argv) {
     series_kalman->append(believe_kalman.mu(0), believe_kalman.mu(1));
     guess_particles = filter_particles.guess(believe_particles);
     series_particles->append(guess_particles(0), guess_particles(1));
-
-    std::cout << "t=" << ticktime*i << ": " << x.transpose() << std::endl;
   }
 
   QApplication app(argc, argv);
 
   QChart *chart = new QChart();
-  chart->legend()->hide();
   chart->addSeries(series_worldstate);
   chart->addSeries(series_measuredstate);
   chart->addSeries(series_kalman);
   chart->addSeries(series_particles);
   chart->createDefaultAxes();
-  chart->setTitle("Simple line chart example");
+  chart->setTitle("Comparison of filters");
 
   QChartView *chartView = new QChartView(chart);
   chartView->setRenderHint(QPainter::Antialiasing);
