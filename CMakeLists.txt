@@ -12,9 +12,9 @@ add_library(mobilerobot SHARED src/filters.cc src/sensors.cc src/world.cc src/wo
 find_package(Qt5Widgets)
 find_package(Qt5Charts)
 
-add_executable(kalman examples/kalmanfilter.cc mobilerobot)
-add_executable(particles examples/particlefilter.cc mobilerobot)
+add_executable(filters examples/comparefilters.cc mobilerobot)
+add_executable(particlefilter examples/particlefilter.cc mobilerobot)
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(kalman Qt5::Widgets Qt5::Charts mobilerobot)
-target_link_libraries(particles Qt5::Widgets Qt5::Charts mobilerobot)
+target_link_libraries(filters Qt5::Widgets Qt5::Charts mobilerobot)
+target_link_libraries(particlefilter Qt5::Widgets Qt5::Charts mobilerobot)

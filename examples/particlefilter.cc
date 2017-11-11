@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   control::State u0;
   u0 << 1.0, 0.1;
 
-  double noise_position = 0.2;
+  double noise_position = 0.1;
   double noise_velocity = 0.3;
   sensors::GPSSensor sensor(noise_position, noise_velocity);
   sensor.measure(0, x0);
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   worldmodel::World model_world(gamma_v, gamma_theta, noise_v, noise_theta);
   filters::ParticleFilter filter_particles(model_world, model_sensor);
 
-  int Nparticles = 50;
+  int Nparticles = 200;
   filters::Particles believe_particles(Nparticles);
   for (auto& particle: believe_particles) particle = worldmodel::State::Zero();
 
